@@ -1,0 +1,117 @@
+version: '3.8'
+
+networks:
+  mercadokwanza-net:
+    driver: bridge
+
+volumes:
+  mysql-luanda-data:
+  mysql-benguela-data:
+  mysql-huambo-data:
+  mongodb-data:
+
+services:
+  # ── NÓ 1: LUANDA — Servidor Principal (Master) ──
+  mysql-luanda:
+    image: mysql:8.0
+    container_name: no-luanda
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: kwanza2024
+      MYSQL_DATABASE: mercadokwanza
+    ports:
+      - '3301:3306'
+    volumes:
+      - mysql-luanda-data:/var/lib/mysql
+      - ./dados:/docker-entrypoint-initdb.d
+    command: >
+      --server-id=1
+      --log-bin=mysql-bin
+      --binlog-format=ROW
+      --binlog-expire-logs-seconds=86400
+      --character-set-server=utf8mb4
+      --collation-server=utf8mb4_unicode_ci
+    networks:
+      - mercadokwanza-net
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-pkwanza2024"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 60s
+
+  # ── NÓ 2: BENGUELA — Réplica 1 (Slave) ──
+  mysql-benguela:
+    image: mysql:8.0
+    container_name: no-benguela
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: kwanza2024
+      MYSQL_DATABASE: mercadokwanza
+    ports:
+      - '3307:3306'
+    volumes:
+      - mysql-benguela-data:/var/lib/mysql
+    command: >
+      --server-id=2
+      --character-set-server=utf8mb4
+      --collation-server=utf8mb4_unicode_ci
+    networks:
+      - mercadokwanza-net
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-pkwanza2024"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 60s
+    depends_on:
+      mysql-luanda:
+        condition: service_healthy
+
+  # ── NÓ 3: HUAMBO — Réplica 2 (Slave) ──
+  mysql-huambo:
+    image: mysql:8.0
+    container_name: no-huambo
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: kwanza2024
+      MYSQL_DATABASE: mercadokwanza
+    ports:
+      - '3308:3306'
+    volumes:
+      - mysql-huambo-data:/var/lib/mysql
+    command: >
+      --server-id=3
+      --character-set-server=utf8mb4
+      --collation-server=utf8mb4_unicode_ci
+    networks:
+      - mercadokwanza-net
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-pkwanza2024"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 60s
+    depends_on:
+      mysql-luanda:
+        condition: service_healthy
+
+  # ── NÓ 4: MONGODB — Sistema NoSQL ──
+  mongodb:
+    image: mongo:7.0
+    container_name: mongo-kwanza
+    restart: unless-stopped
+    ports:
+      - '27017:27017'
+    environment:
+      MONGO_INITDB_DATABASE: mercadokwanza
+    volumes:
+      - mongodb-data:/data/db
+    networks:
+      - mercadokwanza-net
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongosh --quiet
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
