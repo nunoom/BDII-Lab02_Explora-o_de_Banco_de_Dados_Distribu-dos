@@ -33,11 +33,11 @@ try:
         (QUANTIDADE, PRODUTO_ID, LOJA_BENGUELA)
     )
     print(f'[Benguela] Stock decrementado: -{QUANTIDADE} unidades')
-    # ── FASE 2: Registar a venda em Luanda ──
-    cur_l.execute(
-        'INSERT INTO VENDA (loja_id, cliente_id, data_venda, total) VALUES(%s,%s,NOW(),%s)',
-        (LOJA_LUANDA, CLIENTE_ID, QUANTIDADE * 1500) # preço fictício
-    )
+    # ── FASE 2: Registar a venda em Luanda ── (INSERT COMENTADO PARA FORÇAR ERRO)
+    # cur_l.execute(
+    #     'INSERT INTO VENDA (loja_id, cliente_id, data_venda, total) VALUES(%s,%s,NOW(),%s)',
+    #     (LOJA_LUANDA, CLIENTE_ID, QUANTIDADE * 1500) # preço fictício
+    # )
     venda_id = cur_l.lastrowid
     cur_l.execute(
         'INSERT INTO ITEM_VENDA (venda_id, produto_id, qtd, preco_unit, desconto)'
