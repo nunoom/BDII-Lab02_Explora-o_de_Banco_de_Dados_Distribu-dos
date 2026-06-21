@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="pt" xml:lang="pt">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>Lab02 — Grupo 1 — BDD II</title>
+  <style>
+    html {
+      line-height: 1.5;
+      font-family: Georgia, serif;
+      font-size: 20px;
+      color: #1a1a1a;
+      background-color: #fdfdfd;
+    }
+    body {
+      margin: 0 auto;
+      max-width: 36em;
+      padding-left: 50px;
+      padding-right: 50px;
+      padding-top: 50px;
+      padding-bottom: 50px;
+      hyphens: auto;
+      word-wrap: break-word;
+      text-rendering: optimizeLegibility;
+      font-kerning: normal;
+    }
+    @media (max-width: 600px) {
+      body {
+        font-size: 0.9em;
+        padding: 1em;
+      }
+    }
+    @media print {
+      body {
+        background-color: transparent;
+        color: black;
+        font-size: 12pt;
+      }
+      p, h2, h3 {
+        orphans: 3;
+        widows: 3;
+      }
+      h2, h3, h4 {
+        page-break-after: avoid;
+      }
+    }
+    p {
+      margin: 1em 0;
+    }
+    a {
+      color: #1a1a1a;
+    }
+    a:visited {
+      color: #1a1a1a;
+    }
+    img {
+      max-width: 100%;
+    }
+    h1, h2, h3, h4, h5, h6 {
+      margin-top: 1.4em;
+    }
+    h5, h6 {
+      font-size: 1em;
+      font-style: italic;
+    }
+    h6 {
+      font-weight: normal;
+    }
+    ol, ul {
+      padding-left: 1.7em;
+      margin-top: 1em;
+    }
+    li > ol, li > ul {
+      margin-top: 0;
+    }
+    blockquote {
+      margin: 1em 0 1em 1.7em;
+      padding-left: 1em;
+      border-left: 2px solid #e6e6e6;
+      color: #606060;
+    }
+    code {
+      font-family: Menlo, Monaco, 'Lucida Console', Consolas, monospace;
+      font-size: 85%;
+      margin: 0;
+    }
+    pre {
+      margin: 1em 0;
+      overflow: auto;
+    }
+    pre code {
+      padding: 0;
+      overflow: visible;
+    }
+    .sourceCode {
+     background-color: transparent;
+     overflow: visible;
+    }
+    hr {
+      background-color: #1a1a1a;
+      border: none;
+      height: 1px;
+      margin: 1em 0;
+    }
+    table {
+      margin: 1em 0;
+      border-collapse: collapse;
+      width: 100%;
+      overflow-x: auto;
+      display: block;
+      font-variant-numeric: lining-nums tabular-nums;
+    }
+    table caption {
+      margin-bottom: 0.75em;
+    }
+    tbody {
+      margin-top: 0.5em;
+      border-top: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    th {
+      border-top: 1px solid #1a1a1a;
+      padding: 0.25em 0.5em 0.25em 0.5em;
+    }
+    td {
+      padding: 0.125em 0.5em 0.25em 0.5em;
+    }
+    header {
+      margin-bottom: 4em;
+      text-align: center;
+    }
+    #TOC li {
+      list-style: none;
+    }
+    #TOC a:not(:hover) {
+      text-decoration: none;
+    }
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    span.underline{text-decoration: underline;}
+    div.column{display: inline-block; vertical-align: top; width: 50%;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+    pre > code.sourceCode { white-space: pre; position: relative; }
+    pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+    pre > code.sourceCode > span:empty { height: 1.2em; }
+    .sourceCode { overflow: visible; }
+    code.sourceCode > span { color: inherit; text-decoration: inherit; }
+    div.sourceCode { margin: 1em 0; }
+    pre.sourceCode { margin: 0; }
+    @media screen {
+    div.sourceCode { overflow: auto; }
+    }
+    @media print {
+    pre > code.sourceCode { white-space: pre-wrap; }
+    pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+    }
+    pre.numberSource code
+      { counter-reset: source-line 0; }
+    pre.numberSource code > span
+      { position: relative; left: -4em; counter-increment: source-line; }
+    pre.numberSource code > span > a:first-child::before
+      { content: counter(source-line);
+        position: relative; left: -1em; text-align: right; vertical-align: baseline;
+        border: none; display: inline-block;
+        -webkit-touch-callout: none; -webkit-user-select: none;
+        -khtml-user-select: none; -moz-user-select: none;
+        -ms-user-select: none; user-select: none;
+        padding: 0 4px; width: 4em;
+        color: #aaaaaa;
+      }
+    pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+    div.sourceCode
+      {   }
+    @media screen {
+    pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+    }
+    code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+    code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+    code span.at { color: #7d9029; } /* Attribute */
+    code span.bn { color: #40a070; } /* BaseN */
+    code span.bu { } /* BuiltIn */
+    code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+    code span.ch { color: #4070a0; } /* Char */
+    code span.cn { color: #880000; } /* Constant */
+    code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+    code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+    code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+    code span.dt { color: #902000; } /* DataType */
+    code span.dv { color: #40a070; } /* DecVal */
+    code span.er { color: #ff0000; font-weight: bold; } /* Error */
+    code span.ex { } /* Extension */
+    code span.fl { color: #40a070; } /* Float */
+    code span.fu { color: #06287e; } /* Function */
+    code span.im { } /* Import */
+    code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+    code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+    code span.op { color: #666666; } /* Operator */
+    code span.ot { color: #007020; } /* Other */
+    code span.pp { color: #bc7a00; } /* Preprocessor */
+    code span.sc { color: #4070a0; } /* SpecialChar */
+    code span.ss { color: #bb6688; } /* SpecialString */
+    code span.st { color: #4070a0; } /* String */
+    code span.va { color: #19177c; } /* Variable */
+    code span.vs { color: #4070a0; } /* VerbatimString */
+    code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+    .display.math{display: block; text-align: center; margin: 0.5rem auto;}
+  </style>
+  <!--[if lt IE 9]>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
+  <![endif]-->
+</head>
+<body>
+<header id="title-block-header">
+<h1 class="title">Lab02 — Grupo 1 — BDD II</h1>
+</header>
+<h1 id="relatório-lab-02-bases-de-dados-distribuídas">RELATÓRIO — Lab #02: Bases de Dados Distribuídas</h1>
+<h3 id="isptec-base-de-dados-ii">ISPTEC · Base de Dados II</h3>
+<hr />
+<h2 id="capa">1. CAPA</h2>
+<table>
+<colgroup>
+<col style="width: 50%" />
+<col style="width: 50%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>Campo</th>
+<th>Valor</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td><strong>Instituição</strong></td>
+<td>ISPTEC — Instituto Superior Politécnico de Tecnologias e Ciências</td>
+</tr>
+<tr class="even">
+<td><strong>Cadeira</strong></td>
+<td>Base de Dados II</td>
+</tr>
+<tr class="odd">
+<td><strong>Trabalho</strong></td>
+<td>Lab #02 — Bases de Dados Distribuídas</td>
+</tr>
+<tr class="even">
+<td><strong>Grupo</strong></td>
+<td>Grupo 1</td>
+</tr>
+<tr class="odd">
+<td><strong>Cenário / Situação</strong></td>
+<td>Cenário A — Defensor na primeira ronda (Situação A)</td>
+</tr>
+<tr class="even">
+<td><strong>Turma</strong></td>
+<td>M1</td>
+</tr>
+<tr class="odd">
+<td><strong>Elementos</strong></td>
+<td>Nuno Mendes · Khelv Costa · Rafaela Mendes · Paula Alexandre</td>
+</tr>
+<tr class="even">
+<td><strong>Data</strong></td>
+<td>21 de Junho de 2026</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p><strong>Assunto do e-mail de entrega:</strong> <code>[BDD II] Lab02 — Grupo 1 — Situação A</code> <strong>Destinatário:</strong> judson.paiva@isptec.co.ao</p>
+</blockquote>
+<hr />
+<h2 id="parte-1-resultados-fases-0-a-4">2. PARTE 1 — RESULTADOS (Fases 0 a 4)</h2>
+<blockquote>
+<p>⚠️ <strong>NOTA DO GRUPO:</strong> Esta sessão de trabalho cobriu de forma completa a <strong>Fase 4-B</strong> (transação distribuída com 2PC simplificado). As Fases 0 a 3 (preparação do ambiente, carga inicial, etc.) devem ter os respetivos <em>carimbos</em>, prints e logs colados aqui pelo grupo. Abaixo está preenchida a Fase 4-B com dados reais obtidos.</p>
+</blockquote>
+<h3 id="fase-03-preencher-com-os-vossos-carimbosprints">Fase 0–3 — [PREENCHER COM OS VOSSOS CARIMBOS/PRINTS]</h3>
+<ul>
+<li>Fase 0 — Preparação do ambiente Docker: <code>[colar print do</code>docker ps<code>com os 4 contentores</code>healthy<code>]</code></li>
+<li>Fase 1 — Criação do schema <code>mercadokwanza</code>: <code>[colar evidência]</code></li>
+<li>Fase 2 — Carga de dados inicial: <code>[colar evidência]</code></li>
+<li>Fase 3 — <code>[colar evidência]</code></li>
+</ul>
+<h3 id="fase-4-b-transação-distribuída-2pc-simplificado-scriptstransacao.py">Fase 4-B — Transação Distribuída (2PC simplificado) — <code>scripts/transacao.py</code></h3>
+<p>Cenário testado: cliente de Luanda compra um produto cujo stock está em Benguela. O stock é decrementado em <strong>Benguela (porta 3307)</strong> e a venda é registada em <strong>Luanda (porta 3301)</strong>, com <code>commit</code> coordenado nos dois nós. Em caso de erro, <code>rollback</code> em ambos.</p>
+<h4 id="registo-de-resultados-fase-4b">REGISTO DE RESULTADOS — FASE-4B</h4>
+<table>
+<thead>
+<tr class="header">
+<th>Item</th>
+<th>Valor</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Stock em Benguela <strong>ANTES</strong> da transação</td>
+<td><strong>153</strong></td>
+</tr>
+<tr class="even">
+<td>Stock em Benguela <strong>APÓS</strong> a transação (sucesso)</td>
+<td><strong>143</strong> (−10) ✓</td>
+</tr>
+<tr class="odd">
+<td>N.º de vendas em Luanda <strong>ANTES</strong></td>
+<td><strong>30001</strong></td>
+</tr>
+<tr class="even">
+<td>N.º de vendas em Luanda <strong>APÓS</strong> (sucesso)</td>
+<td><strong>30002</strong> (+1) ✓</td>
+</tr>
+<tr class="odd">
+<td>Resultado com erro forçado — <strong>ROLLBACK executado?</strong></td>
+<td><strong>S (Sim)</strong></td>
+</tr>
+<tr class="even">
+<td>Stock em Benguela após ROLLBACK (igual ao inicial?)</td>
+<td><strong>143 — Sim, igual</strong> ✓</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Log da execução com sucesso (passo 21):</strong></p>
+<pre><code>[Benguela] Stock decrementado: -10 unidades
+[Luanda] Venda registada: id=30003
+✓ Transação concluída com sucesso em ambos os nós.</code></pre>
+<p><strong>Log da execução com erro forçado (passo 22 — INSERT da VENDA em Luanda comentado):</strong></p>
+<pre><code>[Benguela] Stock decrementado: -10 unidades
+✗ ROLLBACK efectuado em ambos os nós. Motivo: 1048 (23000): Column &#39;venda_id&#39; cannot be null</code></pre>
+<p><strong>Verificação de consistência após ROLLBACK (passo 23):</strong> Stock em Benguela voltou a <strong>143</strong> e o número de vendas em Luanda manteve-se em <strong>30002</strong> — nenhum nó ficou com alterações parciais, o que confirma a <strong>atomicidade distribuída</strong>.</p>
+<hr />
+<h2 id="parte-1-reflexões-fases-0-a-4">3. PARTE 1 — REFLEXÕES (Fases 0 a 4)</h2>
+<blockquote>
+<p>⚠️ <strong>REESCREVER COM AS VOSSAS PALAVRAS — resposta individual.</strong> Os pontos abaixo são apenas um guia técnico para vos ajudar a estruturar o raciocínio; não devem ser copiados tal como estão.</p>
+</blockquote>
+<p><strong>Sobre a Fase 4-B (transação distribuída):</strong> - A transação só ficou <em>committed</em> nos dois nós depois de ambas as fases (decremento de stock + registo da venda) terem corrido sem erro. Isto demonstra a propriedade de <strong>atomicidade</strong>: “tudo ou nada”. - Quando forçámos o erro, o <code>rollback()</code> foi chamado em <strong>ambas</strong> as ligações. Reparem que a mensagem <code>[Benguela] Stock decrementado</code> chegou a aparecer, mas essa alteração estava apenas dentro da transação aberta e foi <strong>desfeita</strong> — por isso o valor final na base de dados não mudou. - Limitação a discutir: este é um 2PC <strong>simplificado</strong>. Se o processo Python falhasse exatamente <em>entre</em> <code>no_benguela.commit()</code> e <code>no_luanda.commit()</code>, um nó ficaria <em>committed</em> e o outro não. Um 2PC real usaria uma fase de <em>prepare</em> coordenada para evitar isto.</p>
+<hr />
+<h2 id="registo-de-uso-de-ia">4. REGISTO DE USO DE IA</h2>
+<blockquote>
+<p>Ferramenta utilizada: <strong>Claude Code (modelo Claude Opus 4.8)</strong>, via extensão no VS Code. Para cada interação: o pedido feito, o que a IA respondeu e o que o grupo alterou/validou.</p>
+</blockquote>
+<table>
+<colgroup>
+<col style="width: 3%" />
+<col style="width: 30%" />
+<col style="width: 30%" />
+<col style="width: 36%" />
+</colgroup>
+<thead>
+<tr class="header">
+<th>#</th>
+<th>Prompt do grupo (resumo)</th>
+<th>Resposta da IA (resumo)</th>
+<th>O que o grupo alterou/validou</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>1</td>
+<td>“Porque me dá <code>ERROR 1045 Access denied</code> ao ligar ao MySQL com <code>-pkwanza2024</code>?”</td>
+<td>Diagnosticou que o <code>mysqladmin ping</code> do healthcheck devolve exit 0 mesmo com password errada (logo “healthy” não prova nada), e que o volume antigo manteve a password original porque <code>MYSQL_ROOT_PASSWORD</code> só se aplica na 1ª inicialização. Sugeriu <code>docker compose down -v &amp;&amp; up -d</code>.</td>
+<td>Validámos correndo o ping com password errada (deu exit 0). Recriámos os volumes; a password passou a funcionar.</td>
+</tr>
+<tr class="even">
+<td>2</td>
+<td>“Como ligo o MySQL Workbench às bases nos contentores?”</td>
+<td>Indicou host <code>127.0.0.1</code>, portas 3301/3307/3308, user <code>root</code>, e o aviso de não usar <code>localhost</code> em Linux (socket).</td>
+<td>Usámos os parâmetros indicados para criar as 3 ligações no Workbench.</td>
+</tr>
+<tr class="odd">
+<td>3</td>
+<td>“Porque dá erro <code>Could not process parameters: str(...)</code> no <code>transacao.py</code>?”</td>
+<td>Identificou uma <strong>vírgula</strong> entre as duas strings do <code>INSERT INTO ITEM_VENDA</code>, que fazia o <code>execute()</code> interpretar a 2ª string como os parâmetros. Corrigiu para concatenação de strings adjacentes.</td>
+<td>Aceitámos a correção e voltámos a correr o script com sucesso.</td>
+</tr>
+<tr class="even">
+<td>4</td>
+<td>“Executar a transação, forçar erro e registar resultados (passos 21-23).”</td>
+<td>Correu o script (sucesso e erro forçado), capturou os COUNT antes/depois e preencheu a tabela FASE-4B.</td>
+<td>Revimos os valores e confirmámos a consistência após o rollback.</td>
+</tr>
+<tr class="odd">
+<td>5</td>
+<td>“Gerar 50 produtos angolanos realistas e medir a propagação da replicação (P1-A).”</td>
+<td>Gerou <code>scripts/inserir_50_produtos.sql</code> (50 produtos, 9 categorias), correu no Master e mediu a propagação e o <code>Seconds_Behind_Source</code>.</td>
+<td>Revimos a lista de produtos antes de inserir; validámos os COUNT nos 3 nós.</td>
+</tr>
+</tbody>
+</table>
+<blockquote>
+<p>⚠️ Acrescentar aqui os prompts/respostas <strong>literais</strong> (prints) se o docente exigir, e qualquer outro uso de IA que o grupo tenha feito fora desta sessão.</p>
+</blockquote>
+<hr />
+<h2 id="parte-2-implementação-cenário-a-replicação-fragmentação">5. PARTE 2 — IMPLEMENTAÇÃO (Cenário A: Replicação + Fragmentação)</h2>
+<h3 id="arquitetura">5.1 Arquitetura</h3>
+<p>Quatro nós em contentores Docker (ver <code>docker-compose.yml</code>):</p>
+<table>
+<thead>
+<tr class="header">
+<th>Nó</th>
+<th>Contentor</th>
+<th>Papel</th>
+<th>Porta host</th>
+<th>server-id</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Luanda</td>
+<td><code>no-luanda</code></td>
+<td><strong>Master</strong> (escrita)</td>
+<td>3301</td>
+<td>1</td>
+</tr>
+<tr class="even">
+<td>Benguela</td>
+<td><code>no-benguela</code></td>
+<td><strong>Slave / Réplica</strong></td>
+<td>3307</td>
+<td>2</td>
+</tr>
+<tr class="odd">
+<td>Huambo</td>
+<td><code>no-huambo</code></td>
+<td><strong>Slave / Réplica</strong></td>
+<td>3308</td>
+<td>3</td>
+</tr>
+<tr class="even">
+<td>MongoDB</td>
+<td><code>mongo-kwanza</code></td>
+<td>NoSQL (Parte separada)</td>
+<td>27017</td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<p>O Master tem <code>--log-bin=mysql-bin</code> e <code>--binlog-format=ROW</code>. Os Slaves estão ligados ao Master via replicação assíncrona (confirmado com <code>SHOW REPLICA STATUS</code>: <code>Replica_IO_Running=Yes</code>, <code>Replica_SQL_Running=Yes</code>).</p>
+<h3 id="expansão-do-catálogo-passo-25-scriptsinserir_50_produtos.sql">5.2 Expansão do catálogo (passo 25) — <code>scripts/inserir_50_produtos.sql</code></h3>
+<p>Inserção de <strong>50 produtos</strong> com nomes realistas angolanos, distribuídos por 9 categorias (Alimentação, Bebidas, Higiene, Limpeza, Electrónica, Vestuário, Papelaria, Casa, Construção). Exemplos: <em>Fuba de Milho Boa Safra 5kg</em>, <em>Cerveja Cuca Lata 33cl Pack 6</em>, <em>Pano Samakaka 6 Jardas</em>, <em>Saco de Cimento Nova Cimangola 50kg</em>. O ficheiro completo está no repositório.</p>
+<blockquote>
+<p>A inserção é feita <strong>apenas no Master</strong>; a replicação propaga automaticamente para os Slaves.</p>
+</blockquote>
+<h3 id="fragmentação-horizontal-de-stock-passo-28">5.3 Fragmentação horizontal de STOCK (passo 28)</h3>
+<div class="sourceCode" id="cb3"><pre class="sourceCode sql"><code class="sourceCode sql"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="kw">CREATE</span> <span class="kw">OR</span> <span class="kw">REPLACE</span> <span class="kw">VIEW</span> frag_stock_luanda <span class="kw">AS</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>  <span class="kw">SELECT</span> s.<span class="op">*</span> <span class="kw">FROM</span> STOCK s <span class="kw">JOIN</span> LOJA l <span class="kw">ON</span> s.loja_id<span class="op">=</span>l.<span class="kw">id</span> <span class="kw">WHERE</span> l.provincia_id<span class="op">=</span><span class="dv">1</span>;</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="kw">CREATE</span> <span class="kw">OR</span> <span class="kw">REPLACE</span> <span class="kw">VIEW</span> frag_stock_benguela <span class="kw">AS</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>  <span class="kw">SELECT</span> s.<span class="op">*</span> <span class="kw">FROM</span> STOCK s <span class="kw">JOIN</span> LOJA l <span class="kw">ON</span> s.loja_id<span class="op">=</span>l.<span class="kw">id</span> <span class="kw">WHERE</span> l.provincia_id<span class="op">=</span><span class="dv">2</span>;</span></code></pre></div>
+<p>Fragmentação <strong>horizontal</strong>: cada fragmento contém as <em>linhas</em> de STOCK das lojas de uma província.</p>
+<hr />
+<h2 id="parte-2-análise">6. PARTE 2 — ANÁLISE</h2>
+<h3 id="registo-de-resultados-p1-a">REGISTO DE RESULTADOS — P1-A</h3>
+<table>
+<thead>
+<tr class="header">
+<th>Item</th>
+<th>Valor</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>COUNT PRODUTO no Luanda <strong>antes</strong> dos INSERTs</td>
+<td><strong>203</strong></td>
+</tr>
+<tr class="even">
+<td>COUNT PRODUTO no Benguela <strong>antes</strong> dos INSERTs</td>
+<td><strong>203</strong></td>
+</tr>
+<tr class="odd">
+<td>COUNT PRODUTO no Benguela <strong>imediatamente após</strong> INSERT</td>
+<td><strong>253</strong> (≈ 119 ms depois)</td>
+</tr>
+<tr class="even">
+<td>COUNT PRODUTO no Benguela <strong>após 5 segundos</strong></td>
+<td><strong>253</strong></td>
+</tr>
+<tr class="odd">
+<td><strong>Seconds_Behind_Master máximo</strong> observado</td>
+<td><strong>0</strong></td>
+</tr>
+<tr class="even">
+<td>Stock total fragmento <strong>Luanda</strong></td>
+<td><strong>262 386</strong></td>
+</tr>
+<tr class="odd">
+<td>Stock total fragmento <strong>Benguela</strong></td>
+<td><strong>248 892</strong></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Timestamps medidos:</strong> - T0 (instante do INSERT no Master): <code>21:15:40.857</code> - T imediato (COUNT no Benguela): <code>21:15:40.976</code> → já mostrava 253 - T+5s: <code>21:16:18</code> → 253 (estável)</p>
+<p><strong>Evidência (<code>SHOW REPLICA STATUS</code>):</strong></p>
+<pre><code>Replica_IO_Running: Yes
+Replica_SQL_Running: Yes
+Seconds_Behind_Source: 0
+Last_Error:</code></pre>
+<h3 id="análise-à-luz-do-teorema-cap">Análise à luz do Teorema CAP</h3>
+<p>O Teorema CAP afirma que, perante uma <strong>partição de rede (P)</strong>, um sistema distribuído tem de escolher entre <strong>Consistência (C)</strong> e <strong>Disponibilidade (A)</strong>.</p>
+<ul>
+<li>A replicação <strong>Master-Slave assíncrona</strong> do MySQL privilegia <strong>Disponibilidade (AP)</strong>: os Slaves continuam a responder a leituras mesmo que o Master fique inacessível, mas podem servir dados <strong>ligeiramente desatualizados</strong> (consistência eventual). No nosso teste o atraso foi ~0, mas sob carga elevada ou rede degradada o <code>Seconds_Behind_Master</code> aumentaria.</li>
+<li>A transação 2PC da Fase 4-B, pelo contrário, privilegia <strong>Consistência (CP)</strong>: exige que ambos os nós confirmem antes de validar; se um falhar, tudo é revertido — ao custo de bloquear/abortar (menor disponibilidade).</li>
+<li>Conclusão: o MercadoKwanza usa <strong>ambas as estratégias conforme a necessidade</strong> — replicação AP para o catálogo (leituras rápidas, tolerância a atraso) e transações CP para operações críticas de stock/venda (não pode haver dinheiro/stock inconsistente).</li>
+</ul>
+<hr />
+<h2 id="parte-2-reflexões-individuais">7. PARTE 2 — REFLEXÕES (individuais)</h2>
+<blockquote>
+<p>⚠️ <strong>REESCREVER COM AS VOSSAS PALAVRAS — resposta individual de cada elemento.</strong> Guia técnico abaixo.</p>
+</blockquote>
+<p><strong>1. O Slave recebeu os dados antes ou depois dos 5 segundos? O que influencia este tempo?</strong> - No nosso teste, o Slave recebeu os 50 produtos em <strong>~119 ms</strong>, muito <strong>antes</strong> dos 5 segundos. - O tempo de propagação depende de: volume/tamanho das transações, latência de rede entre nós, carga no Master, formato do binlog (ROW vs STATEMENT), e a velocidade a que a thread SQL do Slave aplica o relay log. Com apenas 50 linhas numa rede Docker local, é quase instantâneo.</p>
+<p><strong>2. Se o Master caísse agora, os Slaves teriam todos os dados? O que poderia ficar por replicar?</strong> - Como a replicação é <strong>assíncrona</strong>, o Master confirma o <code>commit</code> ao cliente <strong>antes</strong> de saber se os Slaves já receberam. Numa falha do Master, qualquer transação que estivesse no binlog mas ainda não tivesse sido transferida/aplicada pelo Slave <strong>perder-se-ia</strong> (janela = valor de <code>Seconds_Behind_Master</code>). No nosso caso o atraso era 0, logo a perda seria mínima — mas o risco existe. Replicação <strong>semi-síncrona</strong> reduziria esta janela.</p>
+<p><strong>3. A fragmentação de STOCK por província faz sentido para o negócio? Que consultas ficam mais rápidas e quais mais lentas?</strong> - Faz sentido porque o stock é geograficamente local: cada província gere o seu. Fragmentar por <code>provincia_id</code> permite que cada região consulte só o seu fragmento. - <strong>Mais rápidas:</strong> consultas locais (“stock disponível nas lojas de Luanda”) — leem menos linhas. - <strong>Mais lentas:</strong> consultas globais que cruzam províncias (“stock total do produto X em todo o país”) — exigem juntar/<code>UNION</code> todos os fragmentos.</p>
+<hr />
+<h2 id="dificuldades">8. DIFICULDADES</h2>
+<ol type="1">
+<li><strong><code>Access denied</code> no MySQL apesar da password correta no compose.</strong> Diagnóstico: o healthcheck com <code>mysqladmin ping</code> ficava “healthy” mesmo com password errada (devolve exit 0 se o servidor responder), e o volume Docker antigo tinha mantido a password da primeira inicialização. Resolução: <code>docker compose down -v</code> para recriar os volumes do zero.</li>
+<li><strong><code>Could not process parameters: str(...)</code> no <code>transacao.py</code>.</strong> Diagnóstico: uma vírgula a separar as duas strings do <code>INSERT INTO ITEM_VENDA</code> fazia o conector tratar a 2ª string como os parâmetros. Resolução: remover a vírgula (strings adjacentes concatenam em Python).</li>
+</ol>
+<hr />
+<h2 id="conclusão">9. CONCLUSÃO</h2>
+<p>Neste laboratório montámos um sistema de base de dados distribuído real, com um servidor principal em Luanda e duas réplicas em Benguela e Huambo. Aprendemos, na prática, que <strong>replicar dados não é instantâneo nem garantido</strong>: funciona muito bem quando tudo está saudável (a cópia chegou em milésimas de segundo), mas se o servidor principal falhar no momento errado pode perder-se informação. Também percebemos que uma transação que mexe em dois sítios ao mesmo tempo tem de ser “tudo ou nada” — e vimos isso a acontecer quando forçámos um erro e tudo foi revertido. Por fim, dividir o stock por província (fragmentação) torna as consultas locais mais rápidas, mas as consultas que olham para o país inteiro ficam mais pesadas. No fundo, não há solução perfeita: escolhe-se entre rapidez/disponibilidade e consistência consoante o que o negócio precisa.</p>
+<hr />
+<h2 id="github">10. GITHUB</h2>
+<ul>
+<li><strong>Repositório:</strong> <code>[COLAR LINK DO REPOSITÓRIO AQUI]</code></li>
+<li>O repositório inclui: <code>docker-compose.yml</code>, <code>dados/mercadokwanza.sql</code>, <code>scripts/</code> (transação, inserção de produtos, replicação) e um <code>README.md</code> explicativo.</li>
+</ul>
+<blockquote>
+<p>⚠️ Criar/atualizar o <code>README.md</code> com: descrição do projeto, como subir o ambiente (<code>docker compose up -d</code>), portas de cada nó, e como correr os scripts.</p>
+</blockquote>
+<hr />
+<h2 id="referências-apa-7.ª-edição">11. REFERÊNCIAS (APA 7.ª edição)</h2>
+<ol type="1">
+<li>Brewer, E. (2012). CAP twelve years later: How the “rules” have changed. <em>Computer, 45</em>(2), 23–29. https://doi.org/10.1109/MC.2012.37</li>
+<li>Gilbert, S., &amp; Lynch, N. (2002). Brewer’s conjecture and the feasibility of consistent, available, partition-tolerant web services. <em>ACM SIGACT News, 33</em>(2), 51–59. https://doi.org/10.1145/564585.564601</li>
+<li>Özsu, M. T., &amp; Valduriez, P. (2020). <em>Principles of distributed database systems</em> (4th ed.). Springer. https://doi.org/10.1007/978-3-030-26253-2</li>
+<li>Silberschatz, A., Korth, H. F., &amp; Sudarshan, S. (2020). <em>Database system concepts</em> (7th ed.). McGraw-Hill.</li>
+<li>Tanenbaum, A. S., &amp; van Steen, M. (2017). <em>Distributed systems</em> (3rd ed.). Maarten van Steen.</li>
+<li>Oracle Corporation. (2024). <em>MySQL 8.0 reference manual — Replication</em>. https://dev.mysql.com/doc/refman/8.0/en/replication.html</li>
+</ol>
+</body>
+</html>
