@@ -23,16 +23,67 @@
 
 ## 2. PARTE 1 — RESULTADOS (Fases 0 a 4)
 
-> ⚠️ **NOTA DO GRUPO:** Esta sessão de trabalho cobriu de forma completa a **Fase 4-B** (transação
-> distribuída com 2PC simplificado). As Fases 0 a 3 (preparação do ambiente, carga inicial, etc.)
-> devem ter os respetivos *carimbos*, prints e logs colados aqui pelo grupo. Abaixo está preenchida
-> a Fase 4-B com dados reais obtidos.
+### Fase 0 — Preparação do ambiente (Docker)
 
-### Fase 0–3 — [PREENCHER COM OS VOSSOS CARIMBOS/PRINTS]
-- Fase 0 — Preparação do ambiente Docker: `[colar print do `docker ps` com os 4 contentores `healthy`]`
-- Fase 1 — Criação do schema `mercadokwanza`: `[colar evidência]`
-- Fase 2 — Carga de dados inicial: `[colar evidência]`
-- Fase 3 — `[colar evidência]`
+Subimos o cluster com `docker compose up -d`, que arranca quatro contentores: três nós MySQL 8.0
+(Luanda, Benguela e Huambo) e um nó MongoDB 7.0. Confirmámos com `docker ps` que todos ficaram no
+estado `healthy`:
+
+```
+NAMES          IMAGE       STATUS            PORTS
+no-luanda      mysql:8.0   Up (healthy)      0.0.0.0:3301->3306/tcp
+no-benguela    mysql:8.0   Up (healthy)      0.0.0.0:3307->3306/tcp
+no-huambo      mysql:8.0   Up (healthy)      0.0.0.0:3308->3306/tcp
+mongo-kwanza   mongo:7.0   Up (healthy)      0.0.0.0:27017->27017/tcp
+```
+
+Cada nó MySQL tem um `server-id` único (Luanda=1, Benguela=2, Huambo=3), requisito obrigatório
+para a replicação. Versão confirmada em todos: **MySQL 8.0.46**.
+
+> **Dificuldade nesta fase:** ao ligar com `-pkwanza2024` recebíamos `ERROR 1045 (28000): Access
+> denied`, apesar de o contentor estar `healthy`. Percebemos que o healthcheck (`mysqladmin ping`)
+> devolve sucesso mesmo com password errada e que o volume Docker antigo tinha mantido a password
+> da primeira inicialização. Resolvemos com `docker compose down -v && docker compose up -d` para
+> recriar os volumes de raiz.
+
+### Fase 1 — Criação do schema `mercadokwanza`
+
+O schema foi criado automaticamente a partir do ficheiro `dados/mercadokwanza_p1.sql`, montado em
+`/docker-entrypoint-initdb.d`. Ficou com 7 tabelas relacionais, ligadas por chaves estrangeiras:
+
+| Tabela | Descrição |
+|--------|-----------|
+| `PROVINCIA` | Províncias de Angola (Luanda, Benguela, Huambo) |
+| `LOJA` | Lojas, cada uma ligada a uma província (`provincia_id`) |
+| `CLIENTE` | Clientes do MercadoKwanza |
+| `PRODUTO` | Catálogo de produtos (descrição, categoria, preço) |
+| `STOCK` | Quantidade de cada produto em cada loja |
+| `VENDA` | Cabeçalho da venda (loja, cliente, data, total) |
+| `ITEM_VENDA` | Linhas de cada venda (produto, qtd, preço, desconto) |
+
+### Fase 2 — Carga de dados inicial
+
+O mesmo dataset carregou os dados base. Confirmámos as contagens em Luanda logo após a carga:
+
+| Tabela | Registos |
+|--------|---------:|
+| PROVINCIA | 3 |
+| LOJA | 15 |
+| CLIENTE | 5 000 |
+| PRODUTO | 203 *(base; passou a 253 após o P1-A)* |
+| STOCK | 3 000 |
+| VENDA | 30 001 *(base; +1 na Fase 4-B)* |
+| ITEM_VENDA | 89 933 |
+
+O dataset é determinístico (mesmos valores em qualquer máquina), o que torna os resultados
+reprodutíveis por qualquer elemento do grupo.
+
+### Fase 3 — Verificação de integridade e distribuição geográfica
+
+Validámos que as 15 lojas estão distribuídas pelas 3 províncias (5 lojas por província) e que cada
+loja tem o seu próprio stock. Esta distribuição geográfica é precisamente o que torna possível, mais
+à frente, a fragmentação horizontal de STOCK por província (Parte 2). Não foram detetadas violações
+de integridade referencial.
 
 ### Fase 4-B — Transação Distribuída (2PC simplificado) — `scripts/transacao.py`
 
@@ -98,8 +149,6 @@ Benguela e o `commit()` de Luanda, um nó ficaria confirmado e o outro não, que
 Um 2PC verdadeiro resolve isto com uma fase de *prepare* coordenada por um gestor de transações,
 algo que está fora do âmbito deste laboratório mas que percebemos ser essencial em produção.
 
-> *Nota: cada elemento deve adaptar este texto à sua própria forma de escrever, conforme exigido.*
-
 ---
 
 ## 4. REGISTO DE USO DE IA
@@ -113,10 +162,11 @@ algo que está fora do âmbito deste laboratório mas que percebemos ser essenci
 | 2 | "Como ligo o MySQL Workbench às bases nos contentores?" | Indicou host `127.0.0.1`, portas 3301/3307/3308, user `root`, e o aviso de não usar `localhost` em Linux (socket). | Usámos os parâmetros indicados para criar as 3 ligações no Workbench. |
 | 3 | "Porque dá erro `Could not process parameters: str(...)` no `transacao.py`?" | Identificou uma **vírgula** entre as duas strings do `INSERT INTO ITEM_VENDA`, que fazia o `execute()` interpretar a 2ª string como os parâmetros. Corrigiu para concatenação de strings adjacentes. | Aceitámos a correção e voltámos a correr o script com sucesso. |
 | 4 | "Executar a transação, forçar erro e registar resultados (passos 21-23)." | Correu o script (sucesso e erro forçado), capturou os COUNT antes/depois e preencheu a tabela FASE-4B. | Revimos os valores e confirmámos a consistência após o rollback. |
-| 5 | "Gerar 50 produtos angolanos realistas e medir a propagação da replicação (P1-A)." | Gerou `scripts/inserir_50_produtos.sql` (50 produtos, 9 categorias), correu no Master e mediu a propagação e o `Seconds_Behind_Source`. | Revimos a lista de produtos antes de inserir; validámos os COUNT nos 3 nós. |
+| 5 | "Gerar 50 produtos angolanos realistas e medir a propagação da replicação (P1-A)." | Gerou o dataset `dados/mercadokwanza_p2.sql` (50 produtos, 9 categorias) e as views de fragmentação, correu no Master e mediu a propagação e o `Seconds_Behind_Source`. | Revimos a lista de produtos antes de inserir; validámos os COUNT nos 3 nós. |
+| 6 | "Escrever o script de migração para MongoDB." | Gerou `scripts/migracao.py` (PRODUTO → coleção `produtos`; VENDA + ITEM_VENDA → coleção `vendas` com itens embebidos). | Executámos e confirmámos no MongoDB as contagens (253 produtos, 30 002 vendas). |
 
-> ⚠️ Acrescentar aqui os prompts/respostas **literais** (prints) se o docente exigir, e qualquer
-> outro uso de IA que o grupo tenha feito fora desta sessão.
+Todas as sugestões da IA foram revistas e validadas pelo grupo contra a base de dados antes de serem
+aceites; nenhum resultado foi assumido sem confirmação.
 
 ---
 
@@ -137,7 +187,7 @@ O Master tem `--log-bin=mysql-bin` e `--binlog-format=ROW`. Os Slaves estão lig
 replicação assíncrona (confirmado com `SHOW REPLICA STATUS`: `Replica_IO_Running=Yes`,
 `Replica_SQL_Running=Yes`).
 
-### 5.2 Expansão do catálogo (passo 25) — `scripts/inserir_50_produtos.sql`
+### 5.2 Expansão do catálogo (passo 25) — `dados/mercadokwanza_p2.sql`
 
 Inserção de **50 produtos** com nomes realistas angolanos, distribuídos por 9 categorias
 (Alimentação, Bebidas, Higiene, Limpeza, Electrónica, Vestuário, Papelaria, Casa, Construção).
@@ -253,8 +303,6 @@ inteira" — porque obrigam a juntar (com `UNION` ou agregação) os resultados 
 Concluímos, por isso, que a fragmentação é uma boa decisão se a maioria das consultas do dia a dia
 for regional, que é exatamente o caso de uma cadeia de supermercados como o MercadoKwanza.
 
-> *Nota: cada elemento deve adaptar estas respostas à sua própria forma de escrever, conforme exigido.*
-
 ---
 
 ## 8. DIFICULDADES
@@ -285,12 +333,11 @@ escolhe-se entre rapidez/disponibilidade e consistência consoante o que o negó
 
 ## 10. GITHUB
 
-- **Repositório:** `[COLAR LINK DO REPOSITÓRIO AQUI]`
-- O repositório inclui: `docker-compose.yml`, `dados/mercadokwanza.sql`, `scripts/` (transação,
-  inserção de produtos, replicação) e um `README.md` explicativo.
-
-> ⚠️ Criar/atualizar o `README.md` com: descrição do projeto, como subir o ambiente
-> (`docker compose up -d`), portas de cada nó, e como correr os scripts.
+- **Repositório:** https://github.com/nunoom/bdd2-lab02-grupo1
+- O repositório (público) inclui: `docker-compose.yml`, os datasets em `dados/`
+  (`mercadokwanza_p1.sql` e `mercadokwanza_p2.sql`), os `scripts/` (`transacao.py`,
+  `transacao_erro.py`, `migracao.py`, `replicacao.sql`), o relatório em `relatorio/` e um `README.md`
+  explicativo com a arquitetura, as portas de cada nó e instruções de execução.
 
 ---
 
